@@ -9,6 +9,11 @@ using WNA4_API.Models;
 
 namespace WNA4_API.Controllers
 {
+    //TODO: Add a string to the arguments list. This string is the user's validation token. 
+    //TODO: Make a class to handle authentication
+    //TODO: Among other functions, give that class the ability to validate a token
+    //TODO: Give that class a function to make a new token every log in
+    //TODO: Tell Adel to generate a new token and pass it on every open/login
     public class ContactController : ApiController
     {
         private ContactRepository ContactRepository;
