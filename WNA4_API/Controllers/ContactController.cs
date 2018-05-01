@@ -14,6 +14,7 @@ namespace WNA4_API.Controllers
     //TODO: Among other functions, give that class the ability to validate a token
     //TODO: Give that class a function to make a new token every log in
     //TODO: Tell Adel to generate a new token and pass it on every open/login
+    //TODO: Give the auth controller a GetNewToken or RefreshToken function
     public class ContactController : ApiController
     {
         private ContactRepository ContactRepository;
