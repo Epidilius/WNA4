@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using WNA4_API.Models;
@@ -8,7 +9,8 @@ namespace WNA4_API.Services
 {
     public class AuthenticationRepository
     {
-        const string AuthenticationConnectionString = "";   //TODO: Make a SQL database
+        //TODO: Make a SQL database
+        string AuthenticationConnectionString = ConfigurationManager.ConnectionStrings["WNA4Database"].ConnectionString;
 
         public AuthenticationRepository()
         {
@@ -33,7 +35,6 @@ namespace WNA4_API.Services
 
         public Authentication RefreshToken()
         {
-            //TODO: Give authentication a bool for succesful, a string for token
             var context = HttpContext.Current;
 
             if(context != null)
