@@ -46,3 +46,7 @@ C:\Users\Joel\source\repos\WNA4_API\WNA4_API\obj\Debug\WNA4_API.csprojResolveAss
 C:\Users\Joel\source\repos\WNA4_API\WNA4_API\obj\Debug\WNA4_API.csproj.CoreCompileInputs.cache
 C:\Users\Joel\source\repos\WNA4_API\WNA4_API\obj\Debug\WNA4_API.dll
 C:\Users\Joel\source\repos\WNA4_API\WNA4_API\obj\Debug\WNA4_API.pdb
+E:\Projects\Visual Studio\WNA4_API\WNA4_API\obj\Debug\WNA4_API.csprojResolveAssemblyReference.cache
+E:\Projects\Visual Studio\WNA4_API\WNA4_API\obj\Debug\WNA4_API.csproj.CoreCompileInputs.cache
+E:\Projects\Visual Studio\WNA4_API\WNA4_API\obj\Debug\WNA4_API.dll
+E:\Projects\Visual Studio\WNA4_API\WNA4_API\obj\Debug\WNA4_API.pdb

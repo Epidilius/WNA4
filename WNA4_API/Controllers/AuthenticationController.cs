@@ -22,14 +22,26 @@ namespace WNA4_API.Controllers
         {
             return AuthenticationRepository.RefreshToken();
         }
-
-        public HttpResponseMessage Post(string loginInfo)   //TODO: Multiple Login funcs, for different types (ie, GOogle, Facbeook, email, etc)
+        
+        public string LoginUser(string username, string passwordHash)
         {
-            AuthenticationRepository.Login(loginInfo);
+            //TODO: Compare to values in database
+            var user = AuthenticationRepository.Login(username, passwordHash);
 
-            var response = Request.CreateResponse<Authentication>(System.Net.HttpStatusCode.Created, loginInfo);
+            if (user == null)           return "";
+            if (user.LoggedIn == false) return "";
 
-            return response;
+            return user.AuthToken;
+        }
+        public bool LogoutUser(string userToken)
+        {
+            return AuthenticationRepository.Logout(userToken);
+        }
+
+        public bool CreateUser()
+        {
+            //TODO: Take in all the user's info (username, passhash, email, etc)
+            return true;
         }
     }
 }

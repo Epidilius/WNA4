@@ -7,7 +7,7 @@ namespace WNA4_API.Models
 {
     public class User
     {
-        //TODO: This should not create a new user, I think
-        //TODO: Get user info
+        public int Id { get; set; }
+        public string Name { get; set; }
     }
 }

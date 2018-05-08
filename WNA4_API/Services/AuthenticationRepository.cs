@@ -45,7 +45,7 @@ namespace WNA4_API.Services
             return new Authentication() { };    //TODO: Login
         }
 
-        public bool Login(string loginInfo)
+        public Authentication Login(string username, string passwordHash)
         {
             var context = HttpContext.Current;
 
@@ -54,19 +54,25 @@ namespace WNA4_API.Services
                 try
                 {
                     var userAuthStatus = (Authentication)context.Cache[AuthenticationConnectionString];
-                    userAuthStatus.AuthToken = loginInfo;
+                    userAuthStatus.AuthToken = username + passwordHash;
                     userAuthStatus.LoggedIn = true; //TODO: Funcs for these
                     context.Cache[AuthenticationConnectionString] = userAuthStatus;
-                    return true;
+                    return userAuthStatus;
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.ToString());
-                    return false;
+                    return null;
                 }
             }
 
-            return false;
+            return null;
+        }
+
+        public bool Logout(string userToken)
+        {
+            //TODO: Clear the token in the database
+            return true;
         }
     }
 }
