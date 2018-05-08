@@ -6,11 +6,11 @@ using WNA4_API.Models;
 
 namespace WNA4_API.Services
 {
-    public class ContactRepository
+    public class UserRepository
     {
         private const string CacheKey = "ContactStore"; //TODO: ConnectionString instead of CacheKey
 
-        public ContactRepository()
+        public UserRepository()
         {
             var context = HttpContext.Current;
 
@@ -18,13 +18,13 @@ namespace WNA4_API.Services
             {
                 if (context.Cache[CacheKey] == null)
                 {
-                    var contacts = new Contact[]
+                    var contacts = new User[]
                     {
-                        new Contact
+                        new User
                         {
                             Id = 1, Name = "Glenn Block"
                         },
-                        new Contact
+                        new User
                         {
                             Id = 2, Name = "Dan Roth"
                         }
@@ -35,18 +35,18 @@ namespace WNA4_API.Services
             }
         }
 
-        public Contact[] GetAllContacts()
+        public User[] GetAllContacts()
         {
             var context = HttpContext.Current;
 
             if (context != null)
             {
-                return (Contact[])context.Cache[CacheKey];
+                return (User[])context.Cache[CacheKey];
             }
 
-            return new Contact[]
+            return new User[]
             {
-                new Contact
+                new User
                 {
                     Id = 0,
                     Name = "Placeholder"
@@ -54,7 +54,7 @@ namespace WNA4_API.Services
             };
         }
 
-        public bool SaveContact(Contact contact)
+        public bool SaveContact(User contact)
         {
             var context = HttpContext.Current;
 
@@ -62,7 +62,7 @@ namespace WNA4_API.Services
             {
                 try
                 {
-                    var currentData = ((Contact[])context.Cache[CacheKey]).ToList();
+                    var currentData = ((User[])context.Cache[CacheKey]).ToList();
                     currentData.Add(contact);
                     context.Cache[CacheKey] = currentData.ToArray();
 

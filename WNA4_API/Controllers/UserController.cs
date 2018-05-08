@@ -15,25 +15,25 @@ namespace WNA4_API.Controllers
     //TODO: Give that class a function to make a new token every log in
     //TODO: Tell Adel to generate a new token and pass it on every open/login
     //TODO: Give the auth controller a GetNewToken or RefreshToken function
-    public class ContactController : ApiController
+    public class UserController : ApiController
     {
-        private ContactRepository ContactRepository;
+        private UserRepository ContactRepository;
 
-        public ContactController()
+        public UserController()
         {
-            ContactRepository = new ContactRepository();
+            ContactRepository = new UserRepository();
         }
 
-        public Contact[] Get()
+        public User[] Get()
         {
             return ContactRepository.GetAllContacts();
         }
 
-        public HttpResponseMessage Post(Contact contact)
+        public HttpResponseMessage Post(User contact)
         {
             this.ContactRepository.SaveContact(contact);
 
-            var response = Request.CreateResponse<Contact>(System.Net.HttpStatusCode.Created, contact);
+            var response = Request.CreateResponse<User>(System.Net.HttpStatusCode.Created, contact);
 
             return response;
         }
