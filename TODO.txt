@@ -1,27 +1,5 @@
 2- Social media signup/signin same APi. (It doesn’t take password because gmail password can’t be accessed, though if gmail id isn’t in  database create and return data. If it already exists return user data) .
 
-4- set & unset user status availability(it takes userid-date-setstatus). setstatus takes 1 & 0 for set and unset. 
-	bool SetUserStatus(id, dateStart, availabilityStatus, dateEnd userToken)	
-	Should I use the enum?
-
-5- check available Golfers. ( it takes user id , date) . It returns all available users for this date including status for the user checking id ( ex : if rod is checking , i need to know if this date is set too by rod or not )
-	Make a table AvailabilityByGolfer and AvailabilityByDate
-	JArray GetAvailableGolfers(dateToCheckFor)
-		This checks the AvailabilityByDate table 
-
-6-Add contact. 
-	bool AddContact(string contactID, string userToken)
-
-7-Remove contact.
-	bool RemoveContact(string contactID, string userToken)
-
-8-Search for contact by name. 
-	JArray SearchForContact(string name)
-	How should I deal with names? First/last or just name?
-
-9-show all contacts.
-	JArray GetAllContacts(string userToken)
-
 10- send a message.
 12- send a message to group of ids. 
 11- show all messages( it should have field for read or not so i can know which conversation is opened or not . It should return last message with date). 
@@ -31,6 +9,3 @@
 14- invite google contact. 
 
 15- forget password.
-
-16 - get all available dates for user. 
-	JArray GetAvailableDatesForGolfer(string golferID)

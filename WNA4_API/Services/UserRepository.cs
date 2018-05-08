@@ -12,38 +12,11 @@ namespace WNA4_API.Services
 
         public UserRepository()
         {
-            var context = HttpContext.Current;
-
-            if (context != null)
-            {
-                if (context.Cache[CacheKey] == null)
-                {
-                    var contacts = new User[]
-                    {
-                        new User
-                        {
-                            Id = 1, Name = "Glenn Block"
-                        },
-                        new User
-                        {
-                            Id = 2, Name = "Dan Roth"
-                        }
-                    };
-
-                    context.Cache[CacheKey] = contacts;
-                }
-            }
+            //TODO: Nothing? Maybe check DB connection?
         }
 
         public User[] GetAllContacts()
         {
-            var context = HttpContext.Current;
-
-            if (context != null)
-            {
-                return (User[])context.Cache[CacheKey];
-            }
-
             return new User[]
             {
                 new User
@@ -56,24 +29,12 @@ namespace WNA4_API.Services
 
         public bool SaveContact(User contact)
         {
-            var context = HttpContext.Current;
+            //TODO: Add to user's contact field
+            return false;
+        }
 
-            if (context != null)
-            {
-                try
-                {
-                    var currentData = ((User[])context.Cache[CacheKey]).ToList();
-                    currentData.Add(contact);
-                    context.Cache[CacheKey] = currentData.ToArray();
-
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                    return false;
-                }
-            }
+        public bool SetStatus(string status, string start, string end, string userToken)
+        {
 
             return false;
         }
