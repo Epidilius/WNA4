@@ -6,3 +6,7 @@ E:\Projects\Visual Studio\WNA4_API_V2\WNA4_API_V2\obj\Debug\WNA4_API_V2.csprojRe
 E:\Projects\Visual Studio\WNA4_API_V2\WNA4_API_V2\obj\Debug\WNA4_API_V2.csproj.CoreCompileInputs.cache
 E:\Projects\Visual Studio\WNA4_API_V2\WNA4_API_V2\obj\Debug\WNA4_API_V2.dll
 E:\Projects\Visual Studio\WNA4_API_V2\WNA4_API_V2\obj\Debug\WNA4_API_V2.pdb
+E:\Projects\Visual Studio\WNA4_API_V2\WNA4_API_V2\bin\Debug\Google.Protobuf.dll
+E:\Projects\Visual Studio\WNA4_API_V2\WNA4_API_V2\bin\Debug\MySql.Data.dll
+E:\Projects\Visual Studio\WNA4_API_V2\WNA4_API_V2\bin\Debug\Google.Protobuf.xml
+E:\Projects\Visual Studio\WNA4_API_V2\WNA4_API_V2\bin\Debug\MySql.Data.xml

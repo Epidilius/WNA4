@@ -390,7 +390,7 @@
             // 
             this.textBox_DateSearchByUser.Location = new System.Drawing.Point(732, 325);
             this.textBox_DateSearchByUser.Name = "textBox_DateSearchByUser";
-            this.textBox_DateSearchByUser.Size = new System.Drawing.Size(673, 20);
+            this.textBox_DateSearchByUser.Size = new System.Drawing.Size(372, 20);
             this.textBox_DateSearchByUser.TabIndex = 30;
             // 
             // label9

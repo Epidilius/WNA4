@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using MySql.Data.MySqlClient;
 
 namespace WNA4_API_V2
 {
@@ -14,26 +11,26 @@ namespace WNA4_API_V2
     {
         //TODO: Refactor this class
         //TODO: Validate the user token everywhere I use it
-        static string ConnectionString = @"Data Source=JOELSPC\SQLEXPRESSJOEL;Initial Catalog=WNA4;Integrated Security=True";
+        static string ConnectionString = "Server=parallelzodiac.com; Port=3306; Database=WNA4; Uid=WNA4DBBoss;Pwd=Sch00n3r1!;SslMode=none";
         private static readonly object _syncObject = new object();
 
         //Utility Functions
-        static SqlCommand CreateCommand(string query)
+        static MySqlCommand CreateCommand(string query)
         {
-            SqlConnection con = new SqlConnection(ConnectionString);
+            MySqlConnection con = new MySqlConnection(ConnectionString);
 
-            SqlCommand command = new SqlCommand();
+            MySqlCommand command = new MySqlCommand();
             command.Connection = con;
             command.CommandType = CommandType.Text;
             command.CommandText = query;
 
             return command;
         }
-        static SqlCommand CreateCommandWithArgs(string query, Dictionary<string, object> values)
+        static MySqlCommand CreateCommandWithArgs(string query, Dictionary<string, object> values)
         {
-            SqlConnection con = new SqlConnection(ConnectionString);
+            MySqlConnection con = new MySqlConnection(ConnectionString);
 
-            SqlCommand command = new SqlCommand();
+            MySqlCommand command = new MySqlCommand();
             command.Connection = con;
             command.CommandType = CommandType.Text;
 
@@ -88,13 +85,13 @@ namespace WNA4_API_V2
 
             return command;
         }
-        static SqlDataAdapter CreateDataAdapter(SqlCommand command)
+        static MySqlDataAdapter CreateDataAdapter(MySqlCommand command)
         {
-            SqlDataAdapter adapter = new SqlDataAdapter(command);
+            MySqlDataAdapter adapter = new MySqlDataAdapter(command);
 
             return adapter;
         }
-        static DataTable CreateDataTable(SqlDataAdapter dataAdapter)
+        static DataTable CreateDataTable(MySqlDataAdapter dataAdapter)
         {
             DataTable table = new DataTable();
             dataAdapter.Fill(table);
@@ -105,8 +102,8 @@ namespace WNA4_API_V2
         {
             lock (_syncObject)
             {
-                SqlCommand command = CreateCommand(query);
-                SqlDataAdapter adapter = CreateDataAdapter(command);
+                MySqlCommand command = CreateCommand(query);
+                MySqlDataAdapter adapter = CreateDataAdapter(command);
                 DataTable table = CreateDataTable(adapter);
 
                 return table;
@@ -116,8 +113,8 @@ namespace WNA4_API_V2
         {
             lock (_syncObject)
             {
-                SqlCommand command = CreateCommandWithArgs(query, values);
-                SqlDataAdapter adapter = CreateDataAdapter(command);
+                MySqlCommand command = CreateCommandWithArgs(query, values);
+                MySqlDataAdapter adapter = CreateDataAdapter(command);
                 DataTable table = CreateDataTable(adapter);
 
                 return table;
@@ -169,13 +166,13 @@ namespace WNA4_API_V2
         }
         public static DataTable GetAllAvailableDatesForUser(string userID, string userToken)
         {
-            var query = "SELECT StartDate, EndDate FROM AvailabilityByDate WHERE GolferID = \'" + userID + "\'";
+            var query = "SELECT StartDate, EndDate FROM GolferAvailability WHERE GolferID = \'" + userID + "\'";
             var dataTable = RunQuery(query);
             return dataTable;
         }
         public static DataTable GetAllAvailableGolfersForDate(DateTime date, string userToken)
         {
-            var query = "SELECT GolferID FROM AvailabilityByDate WHERE \'" + date + "\' BETWEEN StartDate AND EndDate AND EventID = '1'";
+            var query = "SELECT GolferID FROM GolferAvailability WHERE \'" + date + "\' BETWEEN StartDate AND EndDate AND Status = '1'";
             var dataTable = RunQuery(query);
             return dataTable;
         }
@@ -254,13 +251,11 @@ namespace WNA4_API_V2
         }
         public static bool SetUserStatus(int eventType, DateTime dateStart, DateTime dateEnd, bool isAllDay, bool isRecurring, string recurrencePattern, int golferID, string userToken)
         {
-            //TODO: Should I take eventID? Then just add users and remove them from the events 1 and 2?
-
             var query = "INSERT INTO AvailabilityByDate ";
 
             Dictionary<string, object> values = new Dictionary<string, object>()
             {
-                { "EventID", eventType },
+                { "Status", eventType },
                 { "StartDate", dateStart },
                 { "EndDate", dateEnd },
                 { "IsAllDay", isAllDay },

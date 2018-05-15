@@ -1,0 +1,11 @@
+E:\Projects\Visual Studio\WNA4_API_V2\WNA4_API_V2\bin\Release\WNA4_API_V2.dll
+E:\Projects\Visual Studio\WNA4_API_V2\WNA4_API_V2\bin\Release\WNA4_API_V2.pdb
+E:\Projects\Visual Studio\WNA4_API_V2\WNA4_API_V2\bin\Release\Google.Protobuf.dll
+E:\Projects\Visual Studio\WNA4_API_V2\WNA4_API_V2\bin\Release\MySql.Data.dll
+E:\Projects\Visual Studio\WNA4_API_V2\WNA4_API_V2\bin\Release\Newtonsoft.Json.dll
+E:\Projects\Visual Studio\WNA4_API_V2\WNA4_API_V2\bin\Release\Google.Protobuf.xml
+E:\Projects\Visual Studio\WNA4_API_V2\WNA4_API_V2\bin\Release\MySql.Data.xml
+E:\Projects\Visual Studio\WNA4_API_V2\WNA4_API_V2\bin\Release\Newtonsoft.Json.xml
+E:\Projects\Visual Studio\WNA4_API_V2\WNA4_API_V2\obj\Release\WNA4_API_V2.csproj.CoreCompileInputs.cache
+E:\Projects\Visual Studio\WNA4_API_V2\WNA4_API_V2\obj\Release\WNA4_API_V2.dll
+E:\Projects\Visual Studio\WNA4_API_V2\WNA4_API_V2\obj\Release\WNA4_API_V2.pdb
