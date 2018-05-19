@@ -301,7 +301,7 @@
             this.textBox_SignIn_Email.Name = "textBox_SignIn_Email";
             this.textBox_SignIn_Email.Size = new System.Drawing.Size(541, 20);
             this.textBox_SignIn_Email.TabIndex = 8;
-            this.textBox_SignIn_Email.Text = "john.doe@gmail.com";
+            this.textBox_SignIn_Email.Text = "John.Doe@gmail.com";
             // 
             // button_SignInHard
             // 

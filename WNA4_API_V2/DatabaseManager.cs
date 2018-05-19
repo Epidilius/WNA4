@@ -10,8 +10,8 @@ namespace WNA4_API_V2
     public static class DatabaseManager
     {
         //TODO: Refactor this class
-        //TODO: Validate the user token everywhere I use it
         static string ConnectionString = "Server=parallelzodiac.com; Port=3306; Database=WNA4; Uid=WNA4DBBoss;Pwd=Sch00n3r1!;SslMode=none";
+        static string TOKEN_REASON_LOGIN = "USER LOGIN";
         private static readonly object _syncObject = new object();
 
         //Utility Functions
@@ -122,55 +122,61 @@ namespace WNA4_API_V2
         }
 
         //Get Functions
-        public static DataTable GetUserFromToken(string userToken)   //TODO: Return types for all of these
+        public static DataTable GetUserFromToken(string userToken)
         {
-            var dataTable = RunQuery("SELECT * FROM Users WHERE UserToken = \'" + userToken + "\'");
+            var query = "SELECT * FROM Users WHERE UserToken = \'" + userToken + "\'";
+            var dataTable = RunQuery(query);
             return dataTable;
         }
-        public static DataTable GetUserFromID(string userID)   //TODO: Return types for all of these
+        public static DataTable GetUserFromID(string userID)
         {
-            var dataTable = RunQuery("SELECT * FROM Users WHERE ID = \'" + userID + "\'");
+            var query = "SELECT * FROM Users WHERE ID = \'" + userID + "\'";
+            var dataTable = RunQuery(query);
             return dataTable;
         }
-        public static DataTable GetUserFromEmail(string email)   //TODO: Return types for all of these
+        public static DataTable GetUserFromEmail(string email)
         {
-            var dataTable = RunQuery("SELECT * FROM Users WHERE Email = \'" + email + "\'");
+            var query = "SELECT * FROM Users WHERE Email = \'" + email + "\'";
+            var dataTable = RunQuery(query);
             return dataTable;
         }
         public static DataTable GetUser(string firstName, string lastName)
         {
-            var dataTable = RunQuery("SELECT * FROM Users WHERE FirstName = \'" + firstName + "\' AND LastName = \'" + lastName + "\'");
+            var query = "SELECT * FROM Users WHERE FirstName = \'" + firstName + "\' AND LastName = \'" + lastName + "\'";
+            var dataTable = RunQuery(query);
             return dataTable;
         }
-        public static DataTable GetUserStatus(string userToken)
+        public static DataTable GetUserStatus(string userID)
         {
-            var dataTable = RunQuery("SELECT UserStatus FROM Users WHERE ID = \'" + userToken + "\'");
+            var query = "SELECT UserStatus FROM Users WHERE ID = \'" + userID + "\'";
+            var dataTable = RunQuery(query);
             return dataTable;
         }
-        public static DataTable GetAllContacts(string userToken)
+        public static DataTable GetAllContacts(string userID)
         {
-            //TODO: Here and everywhere else, make the query a variable and pass that var
-            var dataTable = RunQuery("SELECT Contacts FROM Users WHERE UserToken = \'" + userToken + "\'");
+            var query = "SELECT Contacts FROM Users WHERE ID = \'" + userID + "\'";
+            var dataTable = RunQuery(query);
             return dataTable;
         }
-        public static DataTable GetContact(string contactID, string userToken)  //TODO: Make a function that takes a name?
+        public static DataTable GetContact(string contactID)
         {
             var query = "SELECT FirstName, LastName, Email, PhoneNumber FROM Users WHERE ID = \'" + contactID + "\'";
             var dataTable = RunQuery(query);
             return dataTable;
         }
-        public static DataTable GetUserCalender(string userToken)
-        {   
-            var dataTable = RunQuery("SELECT Contacts FROM Users WHERE ID = \'" + userToken + "\'");
+        public static DataTable GetUserCalender(string userID)
+        {
+            var query = "SELECT Contacts FROM Users WHERE ID = \'" + userID + "\'";
+            var dataTable = RunQuery(query);
             return dataTable;
         }
-        public static DataTable GetAllAvailableDatesForUser(string userID, string userToken)
+        public static DataTable GetAllAvailableDatesForUser(string userID)
         {
             var query = "SELECT StartDate, EndDate FROM GolferAvailability WHERE GolferID = \'" + userID + "\'";
             var dataTable = RunQuery(query);
             return dataTable;
         }
-        public static DataTable GetAllAvailableGolfersForDate(DateTime date, string userToken)
+        public static DataTable GetAllAvailableGolfersForDate(DateTime date)
         {
             var query = "SELECT GolferID FROM GolferAvailability WHERE \'" + date + "\' BETWEEN StartDate AND EndDate AND Status = '1'";
             var dataTable = RunQuery(query);
@@ -184,74 +190,88 @@ namespace WNA4_API_V2
             var userData = GetUserFromEmail(email);
             string savedPasswordHash = Convert.ToString(userData.Rows[0]["PasswordHash"]);
 
-            // Extract the bytes 
-            byte[] hashBytes = Convert.FromBase64String(savedPasswordHash);
+            if(!ValidatePassword(savedPasswordHash, password))
+            {
+                throw new WNA4_Exceptions.InvalidPassWordException();
+            }
 
-            // Get the salt
-            byte[] salt = new byte[16];
-            Array.Copy(hashBytes, 0, salt, 0, 16);
-
-            // Compute the hash on the password the user entered 
-            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 10000); //TODO: Move the 10000 to the config file
-            byte[] hash = pbkdf2.GetBytes(20);
-
-            // Compare the results 
-            for (int i = 0; i < 20; i++)
-                if (hashBytes[i + 16] != hash[i])
-                    return String.Empty;
-                    //throw new UnauthorizedAccessException();
-
-            var token = GenerateUserToken();
-            var tokenSet = SetuserToken(Convert.ToString(userData.Rows[0]["ID"]), token);
+            var token = GenerateUserToken(TOKEN_REASON_LOGIN, Convert.ToString(userData.Rows[0]["GUID"]), Convert.ToString(userData.Rows[0]["ID"]));
+            var tokenSet = SetUserToken(Convert.ToString(userData.Rows[0]["ID"]), token);
             if(!tokenSet)
             {
-                //TODO: Throw exception? Do this. Extend the Exception class and make some custom exceptions Adel can catch
-                return String.Empty;
+                throw new WNA4_Exceptions.InvalidTokenException("Token not set");
             }
 
             return token;
         }
         public static bool LogoutUser(string userToken)
         {
-            //TODO:
-            return false;
+            var query = "UPDATE Users SET UserToken = \'\' WHERE UserToken = \'" + userToken + "\'";
+            var dataTable = RunQuery(query);
+            return true;
         }
-        static string GenerateUserToken()
+        static string GenerateUserToken(string reason, string userGUID, string userID)
         {
-            //Take a look at Walter's answer: https://stackoverflow.com/questions/14643735/how-to-generate-a-unique-token-which-expires-after-24-hours
-            byte[] time = BitConverter.GetBytes(DateTime.UtcNow.ToBinary());
-            byte[] key = Guid.NewGuid().ToByteArray();
-            string token = Convert.ToBase64String(time.Concat(key).ToArray());
+            var token = UserToken.GenerateToken(reason, userGUID, userID);
+            return token;
+        }
+        public static UserToken.TokenValidation ValidateToken(string userToken)
+        {
+            var user = GetUserFromToken(userToken);
 
-            byte[] salt;
-
-            new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);
-            var pbkdf2 = new Rfc2898DeriveBytes(token, salt, 10000);
-            byte[] hash = pbkdf2.GetBytes(20);
-
-            byte[] hashBytes = new byte[36];
-            Array.Copy(salt, 0, hashBytes, 0, 16);
-            Array.Copy(hash, 0, hashBytes, 16, 20);
-
-            return Convert.ToBase64String(hashBytes);
+            var tokenValidation = UserToken.ValidateToken(TOKEN_REASON_LOGIN, Convert.ToString(user.Rows[0]["GUID"]), Convert.ToString(user.Rows[0]["ID"]), userToken);
+            return tokenValidation;
         }
 
         //Modify Functions
-        public static bool AddContact(string userToken, string contactID)
+        public static bool AddContact(string userID, string contactID)
         {
-            //TODO: Append to contact list
-
+            var query = "UPDATE Users SET Contacts = Contacts + \'|" + contactID + "\' WHERE ID = \'" + userID + "\'";
+            RunQuery(query);
             return true;
         }
-        public static bool RemoveContact(string userToken, string contactID)
+        public static bool RemoveContact(string userID, string contactID)
         {
-            //TODO: Get contacts, remove ID from list, update contacts
+            var matchIndex = -1;
+            var contactString = Convert.ToString(GetAllContacts(userID).Rows[0]["Contacts"]);
+            var contactList = contactString.Split('|').ToList();
+
+            for (int i = 0; i < contactList.Count, i++)
+            {
+                var contact = contactList[i];
+                if (contact == contactID)
+                {
+                    matchIndex = i;
+                    break;
+                }                
+            }
+
+            if(matchIndex == -1)
+            {
+                throw new WNA4_Exceptions.ContactDoesNotExistException();
+            }
+
+            contactList.RemoveAt(matchIndex);
+            contactString = string.Empty;
+
+            for(int i = 0; i < contactList.Count; i++)
+            {
+                if(i != 0)
+                {
+                    contactString += "|";
+                }
+
+                contactString += contactList[i];
+            }
+
+            var query = "UPDATE Users SET Contacts = Contacts + \'|" + contactString + "\' WHERE ID = \'" + userID + "\'";
+            RunQuery(query);
 
             return true;
         }
         public static bool SetUserStatus(int eventType, DateTime dateStart, DateTime dateEnd, bool isAllDay, bool isRecurring, string recurrencePattern, int golferID, string userToken)
         {
-            var query = "INSERT INTO AvailabilityByDate ";
+            var query = "INSERT INTO GolferAvailability ";
 
             Dictionary<string, object> values = new Dictionary<string, object>()
             {
@@ -265,27 +285,60 @@ namespace WNA4_API_V2
             };
 
             var dataTable = RunQueryWithArgs(query, values);
-
-            //var userQuery = "UPDATE AvailabilityByGolfer SET Dates = Dates + \'|" + "\'";
-            
+                        
             return true;
         }
-        static bool SetuserToken(string userID, string userToken)
+        static bool SetUserToken(string userID, string userToken)
         {
             var query = "UPDATE Users SET UserToken = \'" + userToken + "\' WHERE ID = \'" + userID + "\'";
             var results = RunQuery(query);
-            //TODO: Check for success, don't just assume. At least throw a try/catch around this
             return true;
         }
 
         //Create Functions
         public static void AddNewUser(Dictionary<string, object> values)
         {
-            var query = "INSERT INTO Users ";
-            RunQueryWithArgs(query, values);
+            values["PasswordHash"] = HashPassword(Convert.ToString(values["PasswordHash"]));
 
-            var dateQuery = ""; //TODO: Set the availability tables to ""
-            var userQuery = "";
+            var query = "INSERT INTO Users ";
+            var dataTable = RunQueryWithArgs(query, values);
+        }
+
+        //UTIL
+        static string HashPassword(string password)
+        {
+            byte[] salt = new byte[16];
+
+            new RNGCryptoServiceProvider().GetBytes(salt);
+            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 10000);
+            byte[] hash = pbkdf2.GetBytes(20);
+
+            byte[] hashBytes = new byte[36];
+            Array.Copy(salt, 0, hashBytes, 0, 16);
+            Array.Copy(hash, 0, hashBytes, 16, 20);
+
+            return Convert.ToBase64String(hashBytes);
+        }
+        static bool ValidatePassword(string passwordHash, string password)
+        {
+            // Extract the bytes 
+            byte[] hashBytes = Convert.FromBase64String(passwordHash);
+
+            // Get the salt
+            byte[] salt = new byte[16];
+            Array.Copy(hashBytes, 0, salt, 0, 16);
+
+            // Compute the hash on the password the user entered 
+            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 10000);
+            byte[] hash = pbkdf2.GetBytes(20);
+
+            // Compare the results 
+            for (int i = 0; i < 20; i++)
+                if (hashBytes[i + 16] != hash[i])
+                    return false;
+            //throw new UnauthorizedAccessException();
+
+            return true;
         }
     }
 }
